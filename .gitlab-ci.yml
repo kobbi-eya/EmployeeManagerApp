@@ -1,0 +1,38 @@
+
+# Définir les stages du pipeline
+stages:
+  - build
+  - test
+  - deploy
+
+# Job de build
+build_job:
+  stage: build
+  image: maven:3.8.6-jdk-11  # Utiliser l'image Docker Maven avec JDK 11
+  script:
+    - mvn clean install
+  artifacts:
+    paths:
+      - target/*.jar  # Archiver le fichier JAR généré
+
+# Job de test
+test_job:
+  stage: test
+  image: maven:3.8.6-jdk-11
+  script:
+    - mvn test
+  dependencies:
+    - build_job
+
+# Job de déploiement
+deploy_job:
+  stage: deploy
+  image: maven:3.8.6-jdk-11
+  script:
+    - echo "Déployer l'application"
+    # Ajouter des scripts de déploiement ici, par exemple, déployer sur un serveur distant ou un service cloud
+  dependencies:
+    - build_job
+  only:
+    - main  # Déployer seulement sur la branche principale
+
